@@ -11,10 +11,10 @@ import platform
 from PIL import Image
 from io import BytesIO
 
-JSONfile = 'C:\\Users\\t.adam\\OneDrive - GROUPE SICA ATLANTIQUE\\Documents\\script\\changeWallpaper\\ArchiveAPOD.json'
-CSVfile = 'C:\\Users\\t.adam\\OneDrive - GROUPE SICA ATLANTIQUE\\Documents\\script\\changeWallpaper\\logs\\horodatage.csv'
-path_image = 'C:\\Users\\t.adam\\OneDrive - GROUPE SICA ATLANTIQUE\\Documents\\script\\changeWallpaper\\image\\'
-path_logs = 'C:\\Users\\t.adam\\OneDrive - GROUPE SICA ATLANTIQUE\\Documents\\script\\changeWallpaper\\logs\\'
+JSONfile = 'changeWallpaper\\ArchiveAPOD.json'
+CSVfile = 'changeWallpaper\\logs\\horodatage.csv'
+path_image = 'changeWallpaper\\image\\'
+path_logs = 'changeWallpaper\\logs\\'
 path_page = ['<html>', '<body alink=\"#FF0000\" bgcolor=\"#FFF5FF\" link=\"#0000FF\" text=\"#000000\" vlink=\"#7F0F9F\">', '<b>']
 
 
