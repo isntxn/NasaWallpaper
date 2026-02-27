@@ -1,16 +1,22 @@
+########################################################################################
+#         CODE QUI PERMET DE CONVERTIR LA PAGE HTML DE l'ARCHIVE DE LA NASA            #
+#         EN FICHIER JSON POUR ACCES AUX DONNEES EN CAS D'INDISPONIBLITE DE            #
+#         L'API. CREER LES FICHIERS "ArchiveAPOD.html" et "ArchiveAPOD.json"           #
+########################################################################################
+
 from bs4 import BeautifulSoup
 import re
 import requests
 import json
 
-
-HTMLfile = 'ArchiveAPOD.html'
-JSONfile = 'ArchiveAPOD.json'
+HTML_FILE = 'ArchiveAPOD.html'
+JSON_FILE = 'ArchiveAPOD.json'
 dict_json = {}
 path = []
 
 ### RECUPERATION ARCHIVES APOD 
 def func_apod():
+    global HTML_FILE
     url = 'https://apod.nasa.gov/apod/archivepix.html'
 
     data = requests.get(url).text
@@ -20,7 +26,7 @@ def func_apod():
     for line in soup:
         temp.append(str(line))
 
-    with open('ArchiveAPOD.html', 'a', encoding='utf-8') as f:
+    with open(HTML_FILE, 'a', encoding='utf-8') as f:
         f.writelines(temp)
 
 
@@ -112,7 +118,7 @@ def main():
     #func_apod()
 
     # ouverture du fichier
-    with open (HTMLfile, 'r') as fh:
+    with open (HTML_FILE, 'r') as fh:
         fich = fh.readlines()
 
     tab_fich = []
@@ -144,7 +150,7 @@ def main():
     #data = json.dumps(dict_json, indent=2)
     #print(data)
 
-    with open (JSONfile, 'w') as fj:
+    with open (JSON_FILE, 'w') as fj:
         json.dump(dict_json, fj, indent=2)
     
 if __name__ == "__main__":
