@@ -11,24 +11,22 @@ import platform
 from PIL import Image
 from io import BytesIO
 
-JSONfile = 'changeWallpaper\\ArchiveAPOD.json'
-CSVfile = 'changeWallpaper\\logs\\horodatage.csv'
-path_image = 'changeWallpaper\\image\\'
-path_logs = 'changeWallpaper\\logs\\'
-path_page = ['<html>', '<body alink=\"#FF0000\" bgcolor=\"#FFF5FF\" link=\"#0000FF\" text=\"#000000\" vlink=\"#7F0F9F\">', '<b>']
-
+JSON_FILE = 'changeWallpaper\\ArchiveAPOD.json'
+CSV_FILE = 'changeWallpaper\\logs\\horodatage.csv'
+PATH_IMAGE = 'changeWallpaper\\image\\'
+PATH_LOGS = 'changeWallpaper\\logs\\'
+PATH_PAGE = ['<html>', '<body alink=\"#FF0000\" bgcolor=\"#FFF5FF\" link=\"#0000FF\" text=\"#000000\" vlink=\"#7F0F9F\">', '<b>']
 
 ### RECUPERE LE CONTENU D'INDEX COURANT
 def recup_dict_path(data):
-    for ind in path_page:
+    for ind in PATH_PAGE:
         data = data[ind]
     return data
-
 
 ### ON LIT LE FICHIER JSON ET ON ECRIT DANS list_page LE CONTENU
 def recup_archive_file():
     # ouverture du fichier JSON
-    with open(JSONfile, 'r', encoding='utf-8') as fj:
+    with open(JSON_FILE, 'r', encoding='utf-8') as fj:
         data_json = json.load(fj)
     
     dic_page = recup_dict_path(data_json)
@@ -38,27 +36,23 @@ def recup_archive_file():
     fj.close()
     return dic_page
 
-
 ### ON LIT LE FICHIER horodatage.csv POUR RECUP LES BANS
 def horodatage():
     bans = []
-    with open(CSVfile, 'r', encoding='utf-8') as fcr:
+    with open(CSV_FILE, 'r', encoding='utf-8') as fcr:
         reader = csv.reader(fcr)
         for row in reader:
             bans.append(row)
         
     return bans
 
-
 ### ON RECUPERE LE NOM DE CHAQUE BANNI QU'ON MET DANS UN TABLEAU
 def claim_all_bans(bans):
     return [row[0] for row in bans]
-
     
 ### ON RECUPERE LE NOM DE CHAQUE FICHIER QU'ON MET DANS UN TABLEAU
 def claim_all_pages(dic_page):
     return [key[9:-2] for key in dic_page.keys()]
-
 
 ### RECUPERATION IMAGE VIA SITE APOD (PAS API) 
 def url_nasa_image(name_page):
@@ -74,12 +68,10 @@ def url_nasa_image(name_page):
     
     return url
 
-
 ### ON ECRIT DANS LE CSV LES NOUVEAUX BANNIS
 def write_in_bans(page):
     csv_file = horodatage() # on récupère le contenu actuel
     csv_file.append([page, 'always'])
-    print(csv_file)
 
     with open(CSVfile, 'w', newline='') as fcw:
         writer = csv.writer(fcw)
@@ -87,8 +79,8 @@ def write_in_bans(page):
     
     fcw.close()
 
-
 ### MINIMUM 1300x2300 POUR GARDER IMAGE
+# Dimensions qui peuvent dépendre mais pour l'instant FIXE
 def condition_dimension(page):
     url = url_nasa_image(page)
     response = requests.get(url, stream=True)
@@ -127,16 +119,16 @@ def random_page(list_pages, bans):
 
 ### ON VERIFIE LES DIMENSIONS DE L'IMAGE EN LOCAL
 def traite_image(nom_fich):
-    image = Image.open(f'{path_image}{nom_fich}')
+    image = Image.open(f'{PATH_IMAGE}{nom_fich}')
     longueur, largeur = image.size
 
     if largeur > longueur:
         image = image.rotate(90, expand=True)
-        image.save(f'{path_image}{nom_fich}')
+        image.save(f'{PATH_IMAGE}{nom_fich}')
 
 
 def add_name_wallpaper(name_fich):
-    with open(f'{path_logs}/name_wallpaper.txt', 'w', encoding='utf-8') as f:
+    with open(f'{PATH_LOGS}/name_wallpaper.txt', 'w', encoding='utf-8') as f:
         f.write(name_fich)
     f.close()
     
@@ -166,7 +158,7 @@ def set_wallpaper_xfce(nom_fich):
 ### CHANGE LE FOND D'ECRAN DANS UN ENV WINDOWS
 def set_wallpaper_win(nom_fich):
     try:
-        ctypes.windll.user32.SystemParametersInfoW(20, 0, f"{path_image}{nom_fich}", 0)
+        ctypes.windll.user32.SystemParametersInfoW(20, 0, f"{PATH_IMAGE}{nom_fich}", 0)
         print(f"Fond d'écran mis à jour avec l'image : {nom_fich}")
     except:
         return -1
@@ -192,7 +184,7 @@ def main():
     # on recupère le contenu de l'image
     response = requests.get(url)
     # on ecrit le contenu de l'image dans le fichier en question
-    with open(f'{path_image}{nom_fich}', 'wb') as f:
+    with open(f'{PATH_IMAGE}{nom_fich}', 'wb') as f:
         f.write(response.content)
 
     traite_image(nom_fich) # retourne l'image si elle est plus grande en largeur qu'en longueur
