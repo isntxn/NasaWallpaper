@@ -1,5 +1,4 @@
 __pycache__/
 *.pyc
 image/
-logs/horodatage.csv
-logs/name_wallpaper.txt
+logs/

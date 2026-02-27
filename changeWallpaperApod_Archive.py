@@ -73,7 +73,7 @@ def write_in_bans(page):
     csv_file = horodatage() # on récupère le contenu actuel
     csv_file.append([page, 'always'])
 
-    with open(CSVfile, 'w', newline='') as fcw:
+    with open(CSV_FILE, 'w', newline='') as fcw:
         writer = csv.writer(fcw)
         writer.writerows(csv_file)
     
