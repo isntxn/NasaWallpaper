@@ -8,9 +8,13 @@ from bs4 import BeautifulSoup
 import re
 import requests
 import json
+import os
 
-HTML_FILE = 'ArchiveAPOD.html'
-JSON_FILE = 'ArchiveAPOD.json'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+JSON_FILE = os.path.join(BASE_DIR, 'ArchiveAPOD.json')
+HTML_FILE = os.path.join(BASE_DIR, 'logs', 'ArchiveAPOD.html')
+
 dict_json = {}
 path = []
 

@@ -14,10 +14,12 @@ load_dotenv()
 API_KEY = os.getenv('API_KEY')
 URL_APOD = f'https://api.nasa.gov/planetary/apod?api_key={API_KEY}'
 
-JSONfile = 'changeWallpaper\\ArchiveAPOD.json'
-CSVfile = 'changeWallpaper\\horodatage.csv'
-path_image = 'changeWallpaper\\image\\'
-path_logs = 'changeWallpaper\\logs\\'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+PATH_IMAGE = os.path.join(BASE_DIR, 'image')
+PATH_LOGS = os.path.join(BASE_DIR, 'logs')
+JSON_FILE = os.path.join(BASE_DIR, 'ArchiveAPOD.json')
+CSV_FILE = os.path.join(BASE_DIR, 'logs', 'horodatage.csv')
 
 ### RECUPERATION IMAGE VIA SITE APOD (PAS API) 
 def url_nasa_image(name_page):
@@ -51,7 +53,7 @@ def condition_dimension(url):
 ### ON LIT LE FICHIER horodatage.csv POUR RECUP LES BANS
 def horodatage():
     bans = []
-    with open(CSVfile, 'r', encoding='utf-8') as fcr:
+    with open(CSV_FILE, 'r', encoding='utf-8') as fcr:
         reader = csv.reader(fcr)
         for row in reader:
             bans.append(row)
@@ -64,7 +66,7 @@ def write_in_bans(page):
     csv_file.append([page, 'always'])
     print(csv_file)
 
-    with open(CSVfile, 'w', newline='') as fcw:
+    with open(CSV_FILE, 'w', newline='') as fcw:
         writer = csv.writer(fcw)
         writer.writerows(csv_file)
     
@@ -117,18 +119,18 @@ def claim_nasa_image(bans):
 def download_image(url, nom_fich):
     response = requests.get(url)
 
-    with open(f'{path_image}{nom_fich}', 'wb') as f:
+    with open(f'{PATH_IMAGE}{nom_fich}', 'wb') as f:
         f.write(response.content)
 
-    image = Image.open(f'{path_image}{nom_fich}')
+    image = Image.open(f'{PATH_IMAGE}{nom_fich}')
     longueur, largeur = image.size
 
     if largeur > longueur:
         image = image.rotate(90, expand=True)
-        image.save(f'{path_image}{nom_fich}')
+        image.save(f'{PATH_IMAGE}{nom_fich}')
 
 def add_name_wallpaper(name_fich):
-    with open(f'{path_logs}/name_wallpaper.txt', 'w', encoding='utf-8') as f:
+    with open(f'{PATH_LOGS}/name_wallpaper.txt', 'w', encoding='utf-8') as f:
         f.write(name_fich)
     f.close()
 
@@ -149,7 +151,7 @@ def set_wallpaper_xfce(nom_fich):
 ### CHANGE LE FOND D'ECRAN DANS UN ENV WINDOWS
 def set_wallpaper_win(nom_fich):
     try:
-        ctypes.windll.user32.SystemParametersInfoW(20, 0, f"{path_image}{nom_fich}", 0)
+        ctypes.windll.user32.SystemParametersInfoW(20, 0, f"{PATH_IMAGE}{nom_fich}", 0)
         print(f"Fond d'écran mis à jour avec l'image : {nom_fich}")
     except:
         return -1

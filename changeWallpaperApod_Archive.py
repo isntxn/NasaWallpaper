@@ -10,10 +10,13 @@ import platform
 from PIL import Image
 from io import BytesIO
 
-JSON_FILE = 'changeWallpaper\\ArchiveAPOD.json'
-CSV_FILE = 'changeWallpaper\\logs\\horodatage.csv'
-PATH_IMAGE = 'changeWallpaper\\image\\'
-PATH_LOGS = 'changeWallpaper\\logs\\'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+PATH_IMAGE = os.path.join(BASE_DIR, 'image')
+PATH_LOGS = os.path.join(BASE_DIR, 'logs')
+JSON_FILE = os.path.join(BASE_DIR, 'ArchiveAPOD.json')
+CSV_FILE = os.path.join(BASE_DIR, 'logs', 'horodatage.csv')
+
 PATH_PAGE = ['<html>', '<body alink=\"#FF0000\" bgcolor=\"#FFF5FF\" link=\"#0000FF\" text=\"#000000\" vlink=\"#7F0F9F\">', '<b>']
 
 ### RECUPERE LE CONTENU D'INDEX COURANT
