@@ -7,12 +7,12 @@ print("       Configuration de NasaWallpaper")
 print("=" * 50)
 
 # Installation des dépendances
-print("\n📦 Installation des dépendances...")
+print("\nInstallation des dépendances...")
 subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
 print("✅ Dépendances installées avec succès.")
 
 # Création du fichier .env
-print("\n🔑 Configuration de la clé API NASA")
+print("\nConfiguration de la clé API NASA")
 print("   Rendez-vous sur https://api.nasa.gov pour obtenir votre clé API gratuite.")
 print("   Renseignez votre prénom, nom et email — vous recevrez la clé immédiatement.")
 
@@ -47,7 +47,7 @@ else:
 
 print("✅ Fichier .env ajouté au .gitignore.")
 
-print("\n🚀 Configuration terminée ! Vous pouvez lancer :")
+print("\nConfiguration terminée ! Vous pouvez lancer :")
 print("   python changeWallpaperApod_API.py      → Mode API (image du jour)")
 print("   python changeWallpaperApod_Archive.py  → Mode Archive (local)")
 print("   python dislike.py                      → Bannir et changer l'image")
