@@ -1,5 +1,7 @@
 __pycache__/
 *.pyc
-image/
-logs/
+logs/*
+!logs/.gitkeep
+image/*
+!image/.gitkeep
 .env
