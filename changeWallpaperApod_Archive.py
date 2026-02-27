@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup
 import requests
 import subprocess
 import os
-import urllib
 import ctypes
 import json
 import csv

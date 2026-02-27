@@ -1,6 +1,7 @@
 from io import BytesIO
 from PIL import Image
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 import requests
 import subprocess
 import os
@@ -8,7 +9,10 @@ import ctypes
 import csv
 import platform
 
-URL_APOD = 'https://api.nasa.gov/planetary/apod?api_key=sA6PUzx5fecNxKKoj18kVkXSMHa4CARJuGC6ifFQ'
+load_dotenv()
+
+API_KEY = os.getenv('API_KEY')
+URL_APOD = f'https://api.nasa.gov/planetary/apod?api_key={API_KEY}'
 
 JSONfile = 'changeWallpaper\\ArchiveAPOD.json'
 CSVfile = 'changeWallpaper\\horodatage.csv'
