@@ -35,31 +35,6 @@ def url_nasa_image(name_page):
     
     return url
 
-### MINIMUM 1300x2300 POUR GARDER IMAGE
-def condition_dimension(url):
-    response = requests.get(url, stream=True)
-
-    try:
-        image = Image.open(BytesIO(response.content))
-        longueur, largeur = image.size
-        print(f"Dimensions: {longueur}x{largeur}")
-
-        return (longueur > 2300 and largeur > 1200) or (longueur > 1200 and largeur > 2300)
-    
-    except Exception as e:
-        print(f"Erreur lors de la vérification: {e}")
-        return False
-
-### ON LIT LE FICHIER horodatage.csv POUR RECUP LES BANS
-def horodatage():
-    bans = []
-    with open(CSV_FILE, 'r', encoding='utf-8') as fcr:
-        reader = csv.reader(fcr)
-        for row in reader:
-            bans.append(row)
-        
-    return bans
-
 ### ON ECRIT DANS LE CSV LES NOUVEAUX BANNIS
 def write_in_bans(page):
     csv_file = horodatage() # on récupère le contenu actuel
@@ -81,6 +56,36 @@ def func_name_url(data):
     
     return name_url
 
+### MINIMUM 1300x2300 POUR GARDER IMAGE
+def condition_dimension(data):
+    url = data['hdurl']
+    response = requests.get(url, stream=True)
+
+    try:
+        image = Image.open(BytesIO(response.content))
+        longueur, largeur = image.size
+        print(f"Dimensions: {longueur}x{largeur}")
+
+        if (longueur > 2300 and largeur > 1200) or (longueur > 1200 and largeur > 2300) : 
+            return True
+        else:
+            write_in_bans(func_name_url(data))
+            return False
+    
+    except Exception as e:
+        print(f"Erreur lors de la vérification: {e}")
+        return False
+
+### ON LIT LE FICHIER horodatage.csv POUR RECUP LES BANS
+def horodatage():
+    bans = []
+    with open(CSV_FILE, 'r', encoding='utf-8') as fcr:
+        reader = csv.reader(fcr)
+        for row in reader:
+            bans.append(row)
+        
+    return bans
+
 ### LE FICHIER DOIT ETRE UNE IMAGE, PAS DE GIF et NE PAS FIGURE DANS LES BANS 
 def condition_url(data, bans):
     if (data['media_type'] == 'image' and not data['hdurl'].endswith('.gif')) and func_name_url(data) not in bans:
@@ -94,7 +99,7 @@ def condition_url(data, bans):
 def claim_nasa_image(bans):
     data = requests.get(URL_APOD, stream=True).json()
 
-    if condition_url(data, bans) and condition_dimension(data['hdurl']):
+    if condition_url(data, bans) and condition_dimension(data):
         url_nasa = data['hdurl']
         nom_fich = url_nasa.split('/')[-1]
 
@@ -102,7 +107,7 @@ def claim_nasa_image(bans):
         url_random = f'{URL_APOD}&count=1'
         data = requests.get(url_random, stream=True).json()[0]
 
-        while not ((condition_url(data, bans)) and condition_dimension(data['hdurl'])):
+        while not ((condition_url(data, bans)) and condition_dimension(data)):
             data = requests.get(url_random, stream=True).json()[0]
         
         url_nasa = data['hdurl']
