@@ -1,7 +1,7 @@
 import changeWallpaperApod_Archive as cwall_Arch
 import changeWallpaperApod_API as cwall
 
-path_logs = 'C:\\Users\\t.adam\\OneDrive - GROUPE SICA ATLANTIQUE\\Documents\\script\\changeWallpaper\\logs\\'
+path_logs = 'changeWallpaper\\logs\\'
 
 ### AJOUT DU FOND D'ECRAN ACTUEL DANS LES BANNIS
 def ban_wallpaper():
