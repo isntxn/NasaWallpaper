@@ -9,12 +9,11 @@ import csv
 import platform
 
 URL_APOD = 'https://api.nasa.gov/planetary/apod?api_key=sA6PUzx5fecNxKKoj18kVkXSMHa4CARJuGC6ifFQ'
-PATH_FILE = 'C:\\Users\\t.adam\\OneDrive - GROUPE SICA ATLANTIQUE\\Documents\\script\\changeWallpaper\\' # A ADAPTER 
 
-JSONfile = f'{PATH_FILE}ArchiveAPOD.json'
-CSVfile = f'{PATH_FILE}horodatage.csv'
-path_image = f'{PATH_FILE}image\\'
-path_logs = f'{PATH_FILE}logs\\'
+JSONfile = 'changeWallpaper\\ArchiveAPOD.json'
+CSVfile = 'changeWallpaper\\horodatage.csv'
+path_image = 'changeWallpaper\\image\\'
+path_logs = 'changeWallpaper\\logs\\'
 
 ### RECUPERATION IMAGE VIA SITE APOD (PAS API) 
 def url_nasa_image(name_page):
