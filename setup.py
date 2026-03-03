@@ -47,6 +47,9 @@ else:
 
 print("✅ Fichier .env ajouté au .gitignore.")
 
+with open('horodatage.csv', "w") as f:
+    print("Création du fichier horodatage.csv")
+
 print("\nConfiguration terminée ! Vous pouvez lancer :")
 print("   python changeWallpaperApod_API.py      → Mode API (image du jour)")
 print("   python changeWallpaperApod_Archive.py  → Mode Archive (local)")

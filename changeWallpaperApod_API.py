@@ -35,36 +35,10 @@ def url_nasa_image(name_page):
     
     return url
 
-### MINIMUM 1300x2300 POUR GARDER IMAGE
-def condition_dimension(url):
-    response = requests.get(url, stream=True)
-
-    try:
-        image = Image.open(BytesIO(response.content))
-        longueur, largeur = image.size
-        print(f"Dimensions: {longueur}x{largeur}")
-
-        return (longueur > 2300 and largeur > 1200) or (longueur > 1200 and largeur > 2300)
-    
-    except Exception as e:
-        print(f"Erreur lors de la vérification: {e}")
-        return False
-
-### ON LIT LE FICHIER horodatage.csv POUR RECUP LES BANS
-def horodatage():
-    bans = []
-    with open(CSV_FILE, 'r', encoding='utf-8') as fcr:
-        reader = csv.reader(fcr)
-        for row in reader:
-            bans.append(row)
-        
-    return bans
-
 ### ON ECRIT DANS LE CSV LES NOUVEAUX BANNIS
 def write_in_bans(page):
     csv_file = horodatage() # on récupère le contenu actuel
     csv_file.append([page, 'always'])
-    print(csv_file)
 
     with open(CSV_FILE, 'w', newline='') as fcw:
         writer = csv.writer(fcw)
@@ -82,6 +56,36 @@ def func_name_url(data):
     
     return name_url
 
+### MINIMUM 1300x2300 POUR GARDER IMAGE
+def condition_dimension(data):
+    url = data['hdurl']
+    response = requests.get(url, stream=True)
+
+    try:
+        image = Image.open(BytesIO(response.content))
+        longueur, largeur = image.size
+        print(f"Dimensions: {longueur}x{largeur}")
+
+        if (longueur > 2300 and largeur > 1200) or (longueur > 1200 and largeur > 2300) : 
+            return True
+        else:
+            write_in_bans(func_name_url(data))
+            return False
+    
+    except Exception as e:
+        print(f"Erreur lors de la vérification: {e}")
+        return False
+
+### ON LIT LE FICHIER horodatage.csv POUR RECUP LES BANS
+def horodatage():
+    bans = []
+    with open(CSV_FILE, 'r', encoding='utf-8') as fcr:
+        reader = csv.reader(fcr)
+        for row in reader:
+            bans.append(row)
+        
+    return bans
+
 ### LE FICHIER DOIT ETRE UNE IMAGE, PAS DE GIF et NE PAS FIGURE DANS LES BANS 
 def condition_url(data, bans):
     if (data['media_type'] == 'image' and not data['hdurl'].endswith('.gif')) and func_name_url(data) not in bans:
@@ -95,18 +99,15 @@ def condition_url(data, bans):
 def claim_nasa_image(bans):
     data = requests.get(URL_APOD, stream=True).json()
 
-    if condition_url(data, bans) and condition_dimension(data['hdurl']):
-        print('APOD PÄRT')
+    if condition_url(data, bans) and condition_dimension(data):
         url_nasa = data['hdurl']
         nom_fich = url_nasa.split('/')[-1]
-        print(nom_fich)
 
     else:
-        print('RANDOM PART')
         url_random = f'{URL_APOD}&count=1'
         data = requests.get(url_random, stream=True).json()[0]
 
-        while not ((condition_url(data, bans)) and condition_dimension(data['hdurl'])):
+        while not ((condition_url(data, bans)) and condition_dimension(data)):
             data = requests.get(url_random, stream=True).json()[0]
         
         url_nasa = data['hdurl']
@@ -119,15 +120,15 @@ def claim_nasa_image(bans):
 def download_image(url, nom_fich):
     response = requests.get(url)
 
-    with open(f'{PATH_IMAGE}{nom_fich}', 'wb') as f:
+    with open(f'{PATH_IMAGE}\\{nom_fich}', 'wb') as f:
         f.write(response.content)
 
-    image = Image.open(f'{PATH_IMAGE}{nom_fich}')
+    image = Image.open(f'{PATH_IMAGE}\\{nom_fich}')
     longueur, largeur = image.size
 
     if largeur > longueur:
         image = image.rotate(90, expand=True)
-        image.save(f'{PATH_IMAGE}{nom_fich}')
+        image.save(f'{PATH_IMAGE}\\{nom_fich}')
 
 def add_name_wallpaper(name_fich):
     with open(f'{PATH_LOGS}/name_wallpaper.txt', 'w', encoding='utf-8') as f:
@@ -151,7 +152,7 @@ def set_wallpaper_xfce(nom_fich):
 ### CHANGE LE FOND D'ECRAN DANS UN ENV WINDOWS
 def set_wallpaper_win(nom_fich):
     try:
-        ctypes.windll.user32.SystemParametersInfoW(20, 0, f"{PATH_IMAGE}{nom_fich}", 0)
+        ctypes.windll.user32.SystemParametersInfoW(20, 0, f"{PATH_IMAGE}\\{nom_fich}", 0)
         print(f"Fond d'écran mis à jour avec l'image : {nom_fich}")
     except:
         return -1
