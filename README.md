@@ -154,3 +154,7 @@ python dislike.py
 ## Licence
 
 Ce projet est open-source et libre d'utilisation.
+
+### Auteur
+
+Xenon.
