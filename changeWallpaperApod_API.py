@@ -38,7 +38,7 @@ def url_nasa_image(name_page):
 ### ON ECRIT DANS LE CSV LES NOUVEAUX BANNIS
 def write_in_bans(page):
     csv_file = horodatage() # on récupère le contenu actuel
-    csv_file.append([page, 'always'])
+    csv_file.append([page])
 
     with open(CSV_FILE, 'w', newline='') as fcw:
         writer = csv.writer(fcw)
@@ -88,11 +88,17 @@ def horodatage():
 
 ### LE FICHIER DOIT ETRE UNE IMAGE, PAS DE GIF et NE PAS FIGURE DANS LES BANS 
 def condition_url(data, bans):
-    if (data['media_type'] == 'image' and not data['hdurl'].endswith('.gif')) and func_name_url(data) not in bans:
+    print(data)
+    # Si le fichier est dans les bannis on return direct False
+    if func_name_url(data) in bans:
+        return False
+    # Si il est pas ban, au bon format et bonne extension alors on garde
+    elif (data['media_type'] == 'image' and not data['hdurl'].endswith('.gif')):
         return True
     else:
         # ecrit le nom du fichier dans les bans
         write_in_bans(func_name_url(data))
+        print(f'Fichier au format : {data['media_type']} et extension en : {data['hdurl']}')
         return False
 
 ### RECUPERATION IMAGE VIA API NASA
@@ -166,12 +172,15 @@ def main():
     csv_file = horodatage() # format : [[banni1,date1], [banni2,date2], [banni3,date3]...]
     bans = claim_all_bans(csv_file) # format : [nom_banni1, nom_banni2, nom_banni3...]
 
-    # on recupere toutes les infos sur la page
-    data, nom_fich = claim_nasa_image(bans)
-    
-    # on télécharge l'image (et on la retourne au besoin)
-    url = data['hdurl']
-    download_image(url, nom_fich)
+    try:
+        # on recupere toutes les infos sur la page
+        data, nom_fich = claim_nasa_image(bans)
+        
+        # on télécharge l'image (et on la retourne au besoin)
+        url = data['hdurl']
+        download_image(url, nom_fich)
+    except:
+        print("Erreur dans l'execution du script")
 
     # on inscrit le nom dans le fichier temporaire 
     add_name_wallpaper(func_name_url(data))

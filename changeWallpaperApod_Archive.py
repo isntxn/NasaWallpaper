@@ -99,6 +99,7 @@ def condition_dimension(page):
 
 ### ON PREND UNE PAGE AU HASARD
 def random_page(list_pages, bans):
+    # liste des pages disponibles (on enlève celle deja bannies)
     available_pages = [p for p in list_pages if p not in bans]
 
     if not available_pages:
@@ -144,7 +145,6 @@ def set_wallpaper_gnome(nom_fich):
     except:
         return -1
 
-
 ### CHANGE LE FOND D'ECRAN DANS UN ENV XFCE
 def set_wallpaper_xfce(nom_fich):
     try:
@@ -156,7 +156,6 @@ def set_wallpaper_xfce(nom_fich):
     except:
         return -1
     
-
 ### CHANGE LE FOND D'ECRAN DANS UN ENV WINDOWS
 def set_wallpaper_win(nom_fich):
     try:
@@ -186,6 +185,7 @@ def main():
     # on recupère le contenu de l'image
     response = requests.get(url)
     # on ecrit le contenu de l'image dans le fichier en question
+    print(PATH_IMAGE)
     with open(f'{PATH_IMAGE}{nom_fich}', 'wb') as f:
         f.write(response.content)
 

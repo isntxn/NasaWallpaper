@@ -156,5 +156,4 @@ python dislike.py
 Ce projet est open-source et libre d'utilisation.
 
 ### Auteur
-
 Xenon.
