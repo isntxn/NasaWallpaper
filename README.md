@@ -32,7 +32,7 @@ Le projet propose **deux modes** de récupération d'image :
 - L'image est téléchargée localement, tourner correctement si nécessaire, puis définie comme fond d'écran.
 
 ### Mode Archive (`changeWallpaperApod_Archive.py`)
-- Fonctionne sans appel à l'API, à partir du fichier `ArchiveAPOD.json` généré localement (à partir du script `ConvertHTMLtoJSON.py`.
+- Fonctionne sans appel à l'API, à partir du fichier `ArchiveAPOD.json` généré localement (à partir du script `ConvertHTMLtoJSON.py`).
 - Sélectionne une image au hasard parmi les archives disponibles, en excluant les images bannies (celles ne respectant pas les critères pour éviter de boucler sur les mêmes images).
 - Récupère l'image directement sur le site APOD de la NASA.
 
@@ -147,7 +147,7 @@ python dislike.py
 - Le fichier `horodatage.csv` grandit au fil du temps avec les images bannies (mauvaises dimensions ou dislikées manuellement). Il peut être vidé si vous souhaitez réinitialiser la liste.
 - Le dossier `image/` stocke la dernière image téléchargée. Les anciennes images ne sont pas supprimées automatiquement.
 - Vous pouvez ajouter un ou plusieurs des scripts en tâches planifiées ou bien en application a executer au démarrage afin de ne pas avoir à lancer le script tous les jours.
-- Ou encore, il est possible d'installer Rainmeter (ou autres) si vous voulez intégrer des boutons sur votre écran principal pour executer ces scripts plus facilement.
+- Ou encore, il est possible d'installer Rainmeter (ou autre) si vous voulez intégrer des boutons sur votre écran principal pour executer ces scripts plus facilement.
 
 ---
 

@@ -1,4 +1,6 @@
 from bs4 import BeautifulSoup
+from PIL import Image
+from io import BytesIO
 import requests
 import subprocess
 import os
@@ -7,8 +9,10 @@ import json
 import csv
 import random
 import platform
-from PIL import Image
-from io import BytesIO
+
+# desactivation warning urllib
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -35,7 +39,6 @@ def recup_archive_file():
     del dic_page['text']
     del dic_page['balise']
 
-    fj.close()
     return dic_page
 
 ### ON LIT LE FICHIER horodatage.csv POUR RECUP LES BANS
@@ -60,7 +63,7 @@ def claim_all_pages(dic_page):
 def url_nasa_image(name_page):
     url = 'https://apod.nasa.gov/apod/'
 
-    data = requests.get(f'{url}/{name_page}').text
+    data = requests.get(f'{url}/{name_page}', stream=True, verify=False).text
     soup = BeautifulSoup(data, features='html.parser')
 
     content_a = soup.find_all('a')
@@ -73,7 +76,7 @@ def url_nasa_image(name_page):
 ### ON ECRIT DANS LE CSV LES NOUVEAUX BANNIS
 def write_in_bans(page):
     csv_file = horodatage() # on récupère le contenu actuel
-    csv_file.append([page, 'always'])
+    csv_file.append([page])
 
     with open(CSV_FILE, 'w', newline='') as fcw:
         writer = csv.writer(fcw)
@@ -81,26 +84,32 @@ def write_in_bans(page):
     
     fcw.close()
 
+def get_name_wallpaper():
+    with open(f'{PATH_LOGS}/name_wallpaper.txt', 'r', encoding='utf-8') as f:
+        name_fich = f.read()
+    
+    return name_fich
+
 ### MINIMUM 1300x2300 POUR GARDER IMAGE
 # Dimensions qui peuvent dépendre mais pour l'instant FIXE
 def condition_dimension(page):
     url = url_nasa_image(page)
-    response = requests.get(url, stream=True)
+    response = requests.get(url, stream=True, verify=False)
 
     try:
         image = Image.open(BytesIO(response.content))
         longueur, largeur = image.size
-        print(f"Dimensions: {longueur}x{largeur}")
-        return (longueur > 2300 and largeur > 1200) or (longueur > 1200 and largeur > 2300)
+        print(f"Archive : Dimensions: {longueur}x{largeur}")
+        return (longueur > 1900 and largeur > 900) or (longueur > 900 and largeur > 1900)
     except Exception as e:
-        print(f"Erreur lors de la vérification: {e}")
+        print(f"Archive : Erreur lors de la vérification: {e}")
         return False
 
 
 ### ON PREND UNE PAGE AU HASARD
 def random_page(list_pages, bans):
     # liste des pages disponibles (on enlève celle deja bannies)
-    available_pages = [p for p in list_pages if p not in bans]
+    available_pages = [p for p in list_pages if p not in bans and p != get_name_wallpaper()]
 
     if not available_pages:
         raise ValueError("Aucune page disponible (toutes bannies)")
@@ -119,23 +128,19 @@ def random_page(list_pages, bans):
     
     raise ValueError("Impossible de trouver une image avec les bonnes dimensions")
 
-
 ### ON VERIFIE LES DIMENSIONS DE L'IMAGE EN LOCAL
 def traite_image(nom_fich):
-    image = Image.open(f'{PATH_IMAGE}{nom_fich}')
+    image = Image.open(f'{PATH_IMAGE}\\{nom_fich}')
     longueur, largeur = image.size
 
     if largeur > longueur:
         image = image.rotate(90, expand=True)
-        image.save(f'{PATH_IMAGE}{nom_fich}')
-
+        image.save(f'{PATH_IMAGE}\\{nom_fich}')
 
 def add_name_wallpaper(name_fich):
     with open(f'{PATH_LOGS}/name_wallpaper.txt', 'w', encoding='utf-8') as f:
         f.write(name_fich)
-    f.close()
     
-
 ### CHANGE LE FOND D'ECRAN DANS UN ENV GNOME
 def set_wallpaper_gnome(nom_fich):
     try:
@@ -159,7 +164,7 @@ def set_wallpaper_xfce(nom_fich):
 ### CHANGE LE FOND D'ECRAN DANS UN ENV WINDOWS
 def set_wallpaper_win(nom_fich):
     try:
-        ctypes.windll.user32.SystemParametersInfoW(20, 0, f"{PATH_IMAGE}{nom_fich}", 0)
+        ctypes.windll.user32.SystemParametersInfoW(20, 0, f"{PATH_IMAGE}\\{nom_fich}", 0)
         print(f"Fond d'écran mis à jour avec l'image : {nom_fich}")
     except:
         return -1
@@ -172,31 +177,32 @@ def main():
     csv_file = horodatage() # format : [[banni1,date1], [banni2,date2], [banni3,date3]...]
     bans = claim_all_bans(csv_file) # format : [nom_banni1, nom_banni2, nom_banni3...]
     
-    # recupération des pages des archives
-    list_pages = claim_all_pages(dic_page) # format : [nom_page1, nom_page2, nom_page3...]
-    # choix d'une page pour le fond d'ecran
-    page_choice = random_page(list_pages, bans)
-    #print(page_choice)
+    try:
+        # recupération des pages des archives
+        list_pages = claim_all_pages(dic_page) # format : [nom_page1, nom_page2, nom_page3...]
+        # choix d'une page pour le fond d'ecran
+        page_choice = random_page(list_pages, bans)
 
-    # on recupère l'url de la page choisie ainsi que le nom du fichier
-    url = url_nasa_image(page_choice)
-    nom_fich = url.split('/')[-1]
+        # on recupère l'url de la page choisie ainsi que le nom du fichier
+        url = url_nasa_image(page_choice)
+        nom_fich = url.split('/')[-1]
 
-    # on recupère le contenu de l'image
-    response = requests.get(url)
-    # on ecrit le contenu de l'image dans le fichier en question
-    print(PATH_IMAGE)
-    with open(f'{PATH_IMAGE}{nom_fich}', 'wb') as f:
-        f.write(response.content)
+        # on recupère le contenu de l'image
+        response = requests.get(url, verify=False)
+        # on ecrit le contenu de l'image dans le fichier en question
+        with open(f'{PATH_IMAGE}\\{nom_fich}', 'wb') as f:
+            f.write(response.content)
 
-    traite_image(nom_fich) # retourne l'image si elle est plus grande en largeur qu'en longueur
+        traite_image(nom_fich) # retourne l'image si elle est plus grande en largeur qu'en longueur
+        add_name_wallpaper(page_choice)
 
-    add_name_wallpaper(page_choice)
+        if platform.system() == 'Windows':
+            set_wallpaper_win(nom_fich)
 
-    if platform.system() == 'Windows':
-        set_wallpaper_win(nom_fich)
-
-    ''' Suite pour Kali et Ubuntu'''
+        ''' Suite pour Kali et Ubuntu'''
+    
+    except Exception as e:
+        print(f"Erreur dans le mode archive : {e}")
     
 
 if __name__ == "__main__":
