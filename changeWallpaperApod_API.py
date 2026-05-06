@@ -45,7 +45,6 @@ def url_nasa_image(name_page):
 ### ON ECRIT DANS LE CSV LES NOUVEAUX BANNIS
 def write_in_bans(page):
     csv_file = horodatage() # on récupère le contenu actuel
-    print(csv_file)
     
     if page not in csv_file:
         csv_file.append([page])
@@ -54,8 +53,10 @@ def write_in_bans(page):
         with open(CSV_FILE, 'w', newline='') as fcw:
             writer = csv.writer(fcw)
             writer.writerows(csv_file)
+            print(f'API : {page} writed in bans')
     else:
         print(f"API : {page} already in bans")
+    return
 
 ### RETOURNE LE NOM DU FICHIER DE L'URL AU FORMAT 'apYYMMDD.html'
 def func_name_url(data):
@@ -129,9 +130,14 @@ def condition_url(data, bans):
         print("API : True, correct URL")
         return True
     else:
+        print('API : False, bad extension or file format')
         # ecrit le nom du fichier dans les bans
         write_in_bans(name_url)
-        print(f'Fichier au format : {data['media_type']} et extension en : {data['hdurl']}')
+
+        if 'media_type' in data: 
+            print(f'API : Fichier au format : {data['media_type']}') 
+        if 'hdurl' in data:
+            print(f'API : Extension du fichier en {data['hdurl']}')
         return False
 
 ### RECUPERATION IMAGE VIA API NASA
@@ -169,7 +175,11 @@ def claim_nasa_image(bans):
 
         iteration += 1
 
-    print(f"\nAPI : {iteration}ième itération réussie\n")
+    if iteration == 1:
+        print(f"\nAPI : {iteration}er itération réussie\n")
+    else:
+        print(f"\nAPI : {iteration}eme itération réussie\n")
+        
     url_nasa = data['hdurl']
     nom_fich = url_nasa.split('/')[-1]
     print(nom_fich)
